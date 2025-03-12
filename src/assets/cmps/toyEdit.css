@@ -1,0 +1,42 @@
+.toy-edit {
+    background-color: #37db4d;
+    text-align: center;
+    padding: 20px;
+}
+
+.toy-edit h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.toy-edit form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.toy-edit label {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.toy-edit input {
+    padding: 5px;
+    font-size: 1em;
+}
+
+.toy-edit button {
+    background-color: #6e225b;
+    color: white;
+    padding: 10px;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.toy-edit button:hover {
+    background-color: #45a049;
+}

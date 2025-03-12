@@ -1,0 +1,83 @@
+.toy-card {
+    background: linear-gradient(135deg, #ffcc33, #ff9966);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+    width: 250px;
+    height: 500px; /* גובה קבוע לכל הכרטיסים */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    color: rgb(189, 104, 104);
+    font-family: Arial, sans-serif;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.toy-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.toy-card h3 {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(3, 3, 3, 0.2);
+}
+
+.toy-card p {
+    font-size: 1em;
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.toy-card .in-stock {
+    color: #08850c;
+    font-weight: bold;
+}
+
+.toy-card .out-of-stock {
+    color: #D32F2F;
+    font-weight: bold;
+}
+
+.toy-card .edit-btn {
+    margin-top: auto;
+    padding: 8px 10px;
+    background-color: #97227a;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.2s ease-in-out;
+    text-align: center;
+    display: block;
+}
+
+.toy-card .edit-btn:hover {
+    background-color: #6e195b;
+}
+
+.toy-btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.delete-btn {
+    background-color: #D32F2F;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+.delete-btn:hover {
+    background-color: #851616;
+}
