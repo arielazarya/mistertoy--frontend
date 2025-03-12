@@ -1,4 +1,6 @@
-const STORAGE_KEY = 'toysDB';
+import bazz from '../assets/img/bazz3.jpeg'
+
+const TOY_KEY = 'toys_db';
 
 export const toyService = {
     query,
@@ -7,56 +9,104 @@ export const toyService = {
     remove
 };
 
-function query() {
-    let toys = JSON.parse(localStorage.getItem(STORAGE_KEY)) || _createDefaultToys();
+// 🔹 פונקציה שמביאה את רשימת הצעצועים עם אפשרות לפילטור
+function query(filterBy = { name: '', minPrice: '', maxPrice: '', inStock: 'all' }) {
+    let toys = loadFromStorage(TOY_KEY);
+
+    if (!toys || !toys.length) {
+        toys = _createDefaultToys();
+        saveToStorage(TOY_KEY, toys);
+    }
+
+    if (filterBy.name) {
+        toys = toys.filter(toy => toy.name.toLowerCase().includes(filterBy.name.toLowerCase()));
+    }
+
+    if (filterBy.minPrice) {
+        toys = toys.filter(toy => toy.price >= filterBy.minPrice);
+    }
+
+    if (filterBy.maxPrice) {
+        toys = toys.filter(toy => toy.price <= filterBy.maxPrice);
+    }
+
+    if (filterBy.inStock !== 'all') {
+        const inStock = filterBy.inStock === 'true';
+        toys = toys.filter(toy => toy.inStock === inStock);
+    }
+
     return Promise.resolve(toys);
 }
 
+// 🔹 שליפת צעצוע לפי מזהה
 function getById(toyId) {
-    const toys = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    const toys = loadFromStorage(TOY_KEY) || [];
     const toy = toys.find(toy => toy._id === toyId);
     return Promise.resolve(toy);
 }
 
+// 🔹 שמירה או עדכון של צעצוע
 function save(toy) {
-    let toys = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    const defaultImgUrl = 'https://www.artdepot.co.il/3141-thickbox_default/%D7%932-%D7%9E%D7%93%D7%91%D7%A7%D7%94-%D7%A2%D7%A0%D7%A7%D7%99%D7%AA-%D7%96%D7%95%D7%94%D7%A8%D7%AA-%D7%91%D7%97%D7%A9%D7%99%D7%9B%D7%94-%D7%A9%D7%9C-%D7%91%D7%90%D7%96-%D7%A9%D7%A0%D7%95%D7%AA-%D7%90%D7%95%D7%A8.jpg';
+    let toys = loadFromStorage(TOY_KEY) || [];
 
     if (toy._id) {
-        const idx = toys.findIndex(t => t._id === toy._id);
-        toys[idx] = { ...toy, imgUrl: toy.imgUrl || defaultImgUrl };
+        toys = toys.map(t => (t._id === toy._id ? toy : t));
     } else {
         toy._id = _makeId();
-        toy.imgUrl = defaultImgUrl;
+        toy.imgUrl = toy.imgUrl || 'https://via.placeholder.com/150'; // תמונת ברירת מחדל
         toys.push(toy);
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toys));
+    saveToStorage(TOY_KEY, toys);
     return Promise.resolve(toy);
 }
 
+// 🔹 מחיקת צעצוע
 function remove(toyId) {
-    let toys = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let toys = loadFromStorage(TOY_KEY) || [];
     toys = toys.filter(toy => toy._id !== toyId);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toys));
+    saveToStorage(TOY_KEY, toys);
     return Promise.resolve();
 }
-function _createDefaultToys() {
-    const defaultImgUrl = 'https://www.artdepot.co.il/3141-thickbox_default/%D7%932-%D7%9E%D7%93%D7%91%D7%A7%D7%94-%D7%A2%D7%A0%D7%A7%D7%99%D7%AA-%D7%96%D7%95%D7%94%D7%A8%D7%AA-%D7%91%D7%97%D7%A9%D7%99%D7%9B%D7%94-%D7%A9%D7%9C-%D7%91%D7%90%D7%96-%D7%A9%D7%A0%D7%95%D7%AA-%D7%90%D7%95%D7%A8.jpg'; // תמונת צעצוע ברירת מחדל
 
-    const toys = [
-        { _id: 't101', name: 'Talking Doll', price: 50, labels: ['Doll'], inStock: true, imgUrl: defaultImgUrl },
-        { _id: 't102', name: 'RC Car', price: 100, labels: ['On wheels', 'Battery Powered'], inStock: false, imgUrl: defaultImgUrl }
+// 🔹 יצירת 2 צעצועים ברירת מחדל במקרה שאין נתונים
+function _createDefaultToys() {
+    return [
+        {
+            _id: _makeId(),
+            name: 'Teddy Bear',
+            price: 20,
+            labels: ['Soft', 'Cuddly'],
+            inStock: true,
+            imgUrl: 'https://i1.sndcdn.com/artworks-000208578302-w733zd-t500x500.jpg'
+        },
+        {
+            _id: _makeId(),
+            name: 'Toy Car',
+            price: 15,
+            labels: ['Fast', 'Durable'],
+            inStock: false,
+            imgUrl: 'https://i1.sndcdn.com/artworks-000208578302-w733zd-t500x500.jpg'
+        }
     ];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toys));
-    return toys;
 }
 
-function _makeId(length = 5) {
+// 🔹 פונקציה ליצירת מזהה ייחודי
+function _makeId(length = 6) {
     var txt = '';
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (var i = 0; i < length; i++) {
         txt += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return txt;
+}
+
+// 🔹 פונקציות לניהול Local Storage
+function saveToStorage(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function loadFromStorage(key) {
+    let data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
 }
